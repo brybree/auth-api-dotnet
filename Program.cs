@@ -5,12 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Controllers
+builder.Services.AddControllers();
+
+// Swagger death
+builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+
+// Logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddOpenApi();
 
 // Database context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
