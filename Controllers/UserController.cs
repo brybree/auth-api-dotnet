@@ -12,7 +12,7 @@ namespace AuthApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
-        private readonly ILogger? _logger;
+        private readonly ILogger _logger;
 
         public UserController(IUserService _userService, ITokenService _tokenService, ILogger _logger)
         {
