@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthApi.Models;
 using AuthApi.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.Extensions.Logging;
 
 namespace AuthApi.Controllers
 {
@@ -12,9 +10,9 @@ namespace AuthApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
-        private readonly ILogger _logger;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserService _userService, ITokenService _tokenService, ILogger _logger)
+        public UserController(IUserService _userService, ITokenService _tokenService, ILogger<UserController> _logger)
         {
             this._userService = _userService;
             this._tokenService = _tokenService;

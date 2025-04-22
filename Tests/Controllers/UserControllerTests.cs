@@ -4,9 +4,6 @@ using AuthApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using AuthAPI.Data;
 
 namespace AuthApi.Tests.Controllers
 {
@@ -15,13 +12,13 @@ namespace AuthApi.Tests.Controllers
         private readonly Mock<IUserService> _mockUserService;
         private readonly Mock<ITokenService> _mockTokenService;
         private readonly UserController _userController;
-        private readonly Mock<ILogger> _mockLogger;
+        private readonly Mock<ILogger<UserController>> _mockLogger;
 
         public UserControllerTests()
         {
             _mockUserService = new Mock<IUserService>();
             _mockTokenService = new Mock<ITokenService>();
-            _mockLogger = new Mock<ILogger>();
+            _mockLogger = new Mock<ILogger<UserController>>();
             _userController = new UserController(_mockUserService.Object, _mockTokenService.Object, _mockLogger.Object);
         }
 
