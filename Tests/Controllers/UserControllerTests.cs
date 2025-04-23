@@ -79,6 +79,31 @@ namespace AuthApi.Tests.Controllers
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
-      
+        [Fact]
+        public async Task Login_Valid_Credentials()
+        {
+            // Given
+            var loginModel = new Login
+            {
+                Email = "test@example.com",
+                Password = "Password123!"
+            };
+            var user = new User { Id = Guid.NewGuid().ToString(), Email = "test@example.com", EmailConfirmed = true };
+            
+            // User should exist and confirmed
+            _mockUserService.Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
+            // An access token must be generated 
+            _mockTokenService.Setup(x => x.GenerateAccessToken(It.IsAny<User>())).Returns("valid_token");
+            // A refresh token must be generated
+            _mockTokenService.Setup(x => x.GenerateRefreshToken()).Returns("refresh_token");
+            
+            // When
+            var result = await _controller.Login(loginModel);
+            
+            // Then
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            dynamic tokenResult = okResult.Value;
+            Assert.NotNull(tokenResult);
+        }
     }
 }
