@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthApi.Models;
 using AuthApi.Services;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace AuthApi.Controllers
 {
@@ -40,7 +41,50 @@ namespace AuthApi.Controllers
                 return BadRequest(new { message = "User registration failed" });
             }
 
+            try
+            {
+                // TODO : generate email verification token
+                // Generate email verification token
+                //var token = await _userService.GenerateEmailConfirmationToken(registerModel.Email);
+                //Send verification email
+                //await _emailService.SendVerificationEmail(registerModel.Email, token);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError("Verification email failed: {message}. Stack trace is {stacktrace}", e.Message, e.StackTrace);
+                return BadRequest(new { message = "Email verification sending failed" });
+            }
+
             return Ok(new {message = "Sucess"});
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(Login loginModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var user = await _userService.ValidateUser(loginModel.Email, loginModel.Password);
+
+            if (user == null)
+                return Unauthorized(new { message = "Invalid credentials or email unverified" });
+            
+            var accessToken = _tokenService.GenerateAccessToken(user);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            return Ok(new
+            {
+                accessToken,
+                refreshToken,
+                expiresIn = 300,
+                user = new
+                {
+                    id = user.Id,
+                    email = user.Email,
+                    firstName = user.FirstName,
+                    lastName = user.LastName
+                }
+            });
         }
     }
 }

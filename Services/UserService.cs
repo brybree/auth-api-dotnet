@@ -38,5 +38,26 @@ namespace AuthApi.Services
             var user = await _userManager.FindByEmailAsync(email);
             return user != null;
         }
+
+        /// <inheritdoc/>
+        public async Task<User?> ValidateUser(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+                return null;
+            
+            if (!user.EmailConfirmed)
+                return null;
+            
+            return new User
+            {
+                Id = user.Id,
+                Email = user.Email!,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                EmailConfirmed = user.EmailConfirmed,
+            };
+        }
     }
 }

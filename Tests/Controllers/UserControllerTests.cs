@@ -98,7 +98,7 @@ namespace AuthApi.Tests.Controllers
             _mockTokenService.Setup(x => x.GenerateRefreshToken()).Returns("refresh_token");
             
             // When
-            var result = await _controller.Login(loginModel);
+            var result = await _userController.Login(loginModel);
             
             // Then
             var okResult = Assert.IsType<OkObjectResult>(result);
