@@ -10,12 +10,14 @@ namespace AuthApi.Controllers
     {
         private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
         private readonly ILogger<UserController> _logger;
 
-        public UserController(IUserService _userService, ITokenService _tokenService, ILogger<UserController> _logger)
+        public UserController(IUserService _userService, ITokenService _tokenService, IEmailService _emailService, ILogger<UserController> _logger)
         {
             this._userService = _userService;
             this._tokenService = _tokenService;
+            this._emailService = _emailService;
             this._logger = _logger;
         }
 
