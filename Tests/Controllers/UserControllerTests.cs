@@ -11,6 +11,7 @@ namespace AuthApi.Tests.Controllers
     {
         private readonly Mock<IUserService> _mockUserService;
         private readonly Mock<ITokenService> _mockTokenService;
+        private readonly Mock<IEmailService> _mockEmailService;
         private readonly UserController _userController;
         private readonly Mock<ILogger<UserController>> _mockLogger;
 
@@ -18,8 +19,9 @@ namespace AuthApi.Tests.Controllers
         {
             _mockUserService = new Mock<IUserService>();
             _mockTokenService = new Mock<ITokenService>();
+            _mockEmailService = new Mock<IEmailService>();
             _mockLogger = new Mock<ILogger<UserController>>();
-            _userController = new UserController(_mockUserService.Object, _mockTokenService.Object, _mockLogger.Object);
+            _userController = new UserController(_mockUserService.Object, _mockTokenService.Object, _mockEmailService.Object, _mockLogger.Object);
         }
 
         [Fact]
@@ -42,11 +44,41 @@ namespace AuthApi.Tests.Controllers
                 .Setup(x => x.RegisterUser(It.IsAny<Register>()))
                 .Returns(Task.FromResult(true));
 
+            // verification mail should have been sent
+            _mockEmailService
+                .Setup(x => x.SendVerificationEmail(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
             // When
             var result = await _userController.Register(registerModel);
 
             // Then
             Assert.IsType<OkObjectResult>(result);
         }
+
+        [Fact]
+        public async Task Register_Existing_User()
+        {
+            // Given
+            var registerModel = new Register
+            {
+                Email = "test@test.com",
+                Password = "StrongPassword123!",
+                ConfirmPassword = "StrongPassword123!",
+            };
+
+            // user should already exist
+            _mockUserService
+                .Setup(x => x.UserExists(It.IsAny<string>()))
+                .Returns(Task.FromResult(true));
+
+            // When
+            var result = await _userController.Register(registerModel);
+
+            // Then
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+      
     }
 }
