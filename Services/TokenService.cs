@@ -9,8 +9,10 @@ namespace AuthApi.Services
 {
     public class TokenService : ITokenService
     {
+        /// <inheritdoc/>
         public string GenerateAccessToken(User user)
         {
+            // todo: random key
             var securityKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("randomkey")
             );
@@ -35,9 +37,20 @@ namespace AuthApi.Services
             return new JwtSecurityTokenHandler().WriteToken(token);   
         }
 
-
+        /// <inheritdoc/>
         public string GenerateRefreshToken()
         {
+            // todo: secure random token
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        /// <inheritdoc/>
+        public string GeneratePasswordResetToken(User user)
+        {
+            // todo: secure random token
             var randomNumber = new byte[32];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
