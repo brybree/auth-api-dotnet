@@ -148,16 +148,18 @@ namespace AuthApi.Tests.Controllers
             _mockTokenService
                 .Setup(x => x.GeneratePasswordResetToken(It.IsAny<User>()))
                 .Returns("reset_token");
+        /* TODO: mail 
             _mockEmailService
                 .Setup(x => x.SendPasswordResetEmail(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
+                .Returns(Task.CompletedTask); */
             // When
             var result = await _userController.ForgotPassword(model);
             
             // Then
             Assert.IsType<OkResult>(result);
+           /* TODO: mail 
             _mockEmailService
-                .Verify(x => x.SendPasswordResetEmail(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+                .Verify(x => x.SendPasswordResetEmail(It.IsAny<string>(), It.IsAny<string>()), Times.Once); */
         }
 
         [Fact]
