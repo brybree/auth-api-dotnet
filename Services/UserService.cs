@@ -59,5 +59,37 @@ namespace AuthApi.Services
                 EmailConfirmed = user.EmailConfirmed,
             };
         }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null) 
+                return null;
+            
+            return new User
+            {
+                Id = user.Id,
+                Email = user.Email!,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                EmailConfirmed = user.EmailConfirmed,
+                RefreshToken = user.RefreshToken,
+                RefreshTokenExpirationTime = user.RefreshTokenExpiryTime
+            };
+        }
+
+        public async Task<bool> ResetPassword(ResetPassword resetPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
+
+            if (user == null)
+                return false;
+            
+            var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
+
+            return result.Succeeded;
+        }
+
     }
 }

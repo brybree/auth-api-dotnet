@@ -24,7 +24,21 @@ namespace AuthApi.Services
         /// </summary>
         /// <param name="email">user email</param>
         /// <param name="password">user password</param>
+        /// <returns>null if invalid or not confirmed</returns>
+        Task<User?> ValidateUser(string email, string password);
+
+        /// <summary>
+        /// Return the user corresponding to the email
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>null if not found</returns>
+        Task<User?> GetUserByEmail(string email);
+
+        /// <summary>
+        /// Reset password
+        /// </summary>
+        /// <param name="resetPassword"></param>
         /// <returns></returns>
-        Task<User> ValidateUser(string email, string password);
+        Task<bool> ResetPassword(ResetPassword resetPassword);
     }
 }
