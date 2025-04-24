@@ -91,11 +91,17 @@ namespace AuthApi.Tests.Controllers
             var user = new User { Id = Guid.NewGuid().ToString(), Email = "test@example.com", EmailConfirmed = true };
             
             // User should exist and confirmed
-            _mockUserService.Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
+            _mockUserService
+                .Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(user);
             // An access token must be generated 
-            _mockTokenService.Setup(x => x.GenerateAccessToken(It.IsAny<User>())).Returns("valid_token");
+            _mockTokenService
+                .Setup(x => x.GenerateAccessToken(It.IsAny<User>()))
+                .Returns("valid_token");
             // A refresh token must be generated
-            _mockTokenService.Setup(x => x.GenerateRefreshToken()).Returns("refresh_token");
+            _mockTokenService
+                .Setup(x => x.GenerateRefreshToken())
+                .Returns("refresh_token");
             
             // When
             var result = await _userController.Login(loginModel);
@@ -104,6 +110,29 @@ namespace AuthApi.Tests.Controllers
             var okResult = Assert.IsType<OkObjectResult>(result);
             dynamic tokenResult = okResult.Value;
             Assert.NotNull(tokenResult);
+        }
+
+        [Fact]
+        public async Task Login_Invalid_Credentials()
+        {
+            // Given
+            var loginModel = new Login
+            {
+                Email = "test@example.com",
+                Password = "Password123!"
+            };
+            var user = new User { Id = Guid.NewGuid().ToString(), Email = "test@example.com", EmailConfirmed = true };
+
+            // User should exist and confirmed
+            _mockUserService
+                .Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult<User>(null));
+            
+            // When
+            var result = await _userController.Login(loginModel);
+            
+            // Then
+            var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
         }
     }
 }
