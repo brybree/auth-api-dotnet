@@ -86,5 +86,40 @@ namespace AuthApi.Controllers
                 }
             });
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPassword forgotPasswordModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userService.GetUserByEmail(forgotPasswordModel.Email);
+
+            // return Ok for security reason, not revealing the user does or does not exist
+            if (user == null)
+                return Ok();
+            
+            var token = _tokenService.GeneratePasswordResetToken(user);
+
+            // TODO: mail
+            // await _emailService.SendPasswordResetEmail(forgotPasswordModel.Email, token);
+
+            return Ok(); 
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPassword resetPasswordModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            var result = await _userService.ResetPassword(resetPasswordModel);
+
+            if (!result)
+                return BadRequest(new { message = "Password reset failed" });
+            
+            return Ok();
+        }
+
     }
 }
