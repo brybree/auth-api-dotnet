@@ -19,7 +19,6 @@ namespace AuthApi.Services
         /// <returns></returns>
         Task<bool> UserExists(string email);
 
-        // TODO : may check hash instead of clear password here
         /// <summary>
         /// Return the user if he exists and matchs the authentication
         /// </summary>
