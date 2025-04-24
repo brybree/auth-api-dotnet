@@ -123,7 +123,7 @@ namespace AuthApi.Tests.Controllers
             };
             var user = new User { Id = Guid.NewGuid().ToString(), Email = "test@example.com", EmailConfirmed = true };
 
-            // User should exist and confirmed
+            // Either user does not exist or credentials are invalid
             _mockUserService
                 .Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult<User>(null));
@@ -133,6 +133,53 @@ namespace AuthApi.Tests.Controllers
             
             // Then
             var badResult = Assert.IsType<UnauthorizedObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task ForgotPassword_ValidEmail_SendsResetEmail()
+        {
+            // Given
+            var model = new ForgotPassword { Email = "test@example.com" };
+            var user = new User { Id = Guid.NewGuid().ToString(), Email = "test@example.com" };
+            
+            _mockUserService
+                .Setup(x => x.GetUserByEmail(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _mockTokenService
+                .Setup(x => x.GeneratePasswordResetToken(It.IsAny<User>()))
+                .Returns("reset_token");
+            _mockEmailService
+                .Setup(x => x.SendPasswordResetEmail(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+            // When
+            var result = await _userController.ForgotPassword(model);
+            
+            // Then
+            Assert.IsType<OkResult>(result);
+            _mockEmailService
+                .Verify(x => x.SendPasswordResetEmail(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task ResetPassword_ValidToken_ResetsPassword()
+        {
+            // Given
+            var model = new ResetPassword
+            {
+                Email = "test@example.com",
+                Token = "valid_reset_token",
+                Password = "NewPassword123!",
+                ConfirmPassword = "NewPassword123!"
+            };
+            _mockUserService
+                .Setup(x => x.ResetPassword(It.IsAny<ResetPassword>()))
+                .ReturnsAsync(true);
+            
+            // When
+            var result = await _userController.ResetPassword(model);
+            
+            // Then
+            Assert.IsType<OkResult>(result);
         }
     }
 }
