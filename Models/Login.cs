@@ -8,8 +8,7 @@ namespace AuthApi.Models
     public class Login
     {
         [Required]
-        [EmailAddress]
-        public required string Email { get; set; }
+        public required string UserName { get; set; }
 
         [Required]
         public required string Password { get; set; } 

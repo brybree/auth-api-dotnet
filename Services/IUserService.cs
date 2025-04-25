@@ -14,31 +14,24 @@ namespace AuthApi.Services
         /// <summary>
         /// Check if a user exist
         /// </summary>
-        /// <remarks>Whether or not the email is confirm, if the user exist in database, return true</remarks>
+        /// <remarks>Whether or not the user name is confirm, if the user exist in database, return true</remarks>
         /// <param name="v"></param>
         /// <returns></returns>
-        Task<bool> UserExists(string email);
+        Task<bool> UserExists(string userName);
 
         /// <summary>
         /// Return the user if he exists and matchs the authentication
         /// </summary>
-        /// <param name="email">user email</param>
+        /// <param name="userName">user name</param>
         /// <param name="password">user password</param>
         /// <returns>null if invalid or not confirmed</returns>
-        Task<User?> ValidateUser(string email, string password);
+        Task<User?> ValidateUser(string userName, string password);
 
         /// <summary>
-        /// Return the user corresponding to the email
+        /// Return the user corresponding to the username
         /// </summary>
-        /// <param name="email"></param>
+        /// <param name="userName"></param>
         /// <returns>null if not found</returns>
-        Task<User?> GetUserByEmail(string email);
-
-        /// <summary>
-        /// Reset password
-        /// </summary>
-        /// <param name="resetPassword"></param>
-        /// <returns></returns>
-        Task<bool> ResetPassword(ResetPassword resetPassword);
+        Task<User?> GetUserByName(string userName);
     }
 }

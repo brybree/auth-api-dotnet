@@ -7,8 +7,7 @@ namespace AuthApi.Models
     /// </summary>
     public class Register {
         [Required]
-        [EmailAddress]
-        public required string Email { get; set; }
+        public required string UserName { get; set; }
 
         [Required]
         [MinLength(8)]
@@ -17,9 +16,5 @@ namespace AuthApi.Models
         [Required]
         [Compare("Password")]
         public required string ConfirmPassword { get; set; } 
-        
-        // others business requirements
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
     }
 }

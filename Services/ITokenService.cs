@@ -16,11 +16,5 @@ namespace AuthApi.Services
         /// </summary>
         /// <returns></returns>
         string GenerateRefreshToken();
-
-        /// <summary>
-        /// Generate a base64 password reset token
-        /// </summary>
-        /// <returns></returns>
-        string GeneratePasswordResetToken(User user);
     }
 }

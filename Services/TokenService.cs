@@ -21,9 +21,9 @@ namespace AuthApi.Services
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName),
             };
 
             var token = new JwtSecurityToken(
@@ -39,16 +39,6 @@ namespace AuthApi.Services
 
         /// <inheritdoc/>
         public string GenerateRefreshToken()
-        {
-            // todo: secure random token
-            var randomNumber = new byte[32];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
-
-        /// <inheritdoc/>
-        public string GeneratePasswordResetToken(User user)
         {
             // todo: secure random token
             var randomNumber = new byte[32];

@@ -18,10 +18,7 @@ namespace AuthApi.Services
         {
             var user = new ApplicationUser
             {
-                UserName = registerModel.Email,
-                Email = registerModel.Email,
-                FirstName = registerModel.FirstName,
-                LastName = registerModel.LastName,
+                UserName = registerModel.UserName,
             };
 
             var result = await _userManager.CreateAsync(user, registerModel.Password);
@@ -33,36 +30,30 @@ namespace AuthApi.Services
         }
 
         /// <inheritdoc/>
-        async Task<bool> IUserService.UserExists(string email)
+        async Task<bool> IUserService.UserExists(string userName)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(userName);
             return user != null;
         }
 
         /// <inheritdoc/>
-        public async Task<User?> ValidateUser(string email, string password)
+        public async Task<User?> ValidateUser(string userName, string password)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(userName);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, password))
-                return null;
-            
-            if (!user.EmailConfirmed)
                 return null;
             
             return new User
             {
                 Id = user.Id,
-                Email = user.Email!,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                EmailConfirmed = user.EmailConfirmed,
+                UserName = user.UserName!,
             };
         }
 
-        public async Task<User?> GetUserByEmail(string email)
+        public async Task<User?> GetUserByName(string userName)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(userName);
 
             if (user == null) 
                 return null;
@@ -70,26 +61,10 @@ namespace AuthApi.Services
             return new User
             {
                 Id = user.Id,
-                Email = user.Email!,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                EmailConfirmed = user.EmailConfirmed,
+                UserName = user.UserName!,
                 RefreshToken = user.RefreshToken,
                 RefreshTokenExpirationTime = user.RefreshTokenExpiryTime
             };
         }
-
-        public async Task<bool> ResetPassword(ResetPassword resetPassword)
-        {
-            var user = await _userManager.FindByEmailAsync(resetPassword.Email);
-
-            if (user == null)
-                return false;
-            
-            var result = await _userManager.ResetPasswordAsync(user, resetPassword.Token, resetPassword.Password);
-
-            return result.Succeeded;
-        }
-
     }
 }
