@@ -25,6 +25,16 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// Retrieve Configurations
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+// Ensure Configurations is set in production
+builder.Services.PostConfigure<JwtSettings>(settings =>
+{
+    if (string.IsNullOrWhiteSpace(settings.SecretKey))
+        throw new Exception("JWT SecretKey is not set");
+});
+
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

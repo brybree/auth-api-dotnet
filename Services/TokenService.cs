@@ -2,22 +2,29 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 using AuthApi.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AuthApi.Services
 {
     public class TokenService : ITokenService
     {
+        private readonly JwtSettings _jwtSettings;
+
+        public TokenService(IOptions<JwtSettings> jwtOptions)
+        {
+            _jwtSettings = jwtOptions.Value;
+        }
+
         /// <inheritdoc/>
         public string GenerateAccessToken(User user)
         {
-            // todo: random key
-            var securityKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("randomkey")
-            );
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);
-        
+
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
@@ -30,21 +37,20 @@ namespace AuthApi.Services
                 issuer: "issuer",
                 audience: "audience",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(300),
+                expires: DateTime.Now.AddMinutes(_jwtSettings.TokenLifetimeMinutes),
                 signingCredentials: credentials
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);   
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         /// <inheritdoc/>
         public string GenerateRefreshToken()
         {
-            // todo: secure random token
-            var randomNumber = new byte[32];
+            var randomNumber = new byte[64];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
+            return HttpUtility.UrlEncode(randomNumber);
         }
     }
 }
