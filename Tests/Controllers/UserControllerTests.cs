@@ -101,7 +101,7 @@ namespace AuthApi.Tests.Controllers
             
             // Then
             var okResult = Assert.IsType<OkObjectResult>(result);
-            dynamic tokenResult = okResult.Value;
+            OkObjectResult tokenResult = okResult;
             Assert.NotNull(tokenResult);
         }
 
@@ -119,7 +119,7 @@ namespace AuthApi.Tests.Controllers
             // Either user does not exist or credentials are invalid
             _mockUserService
                 .Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult<User>(null));
+                .Returns(Task.FromResult<User?>(null));
             
             // When
             var result = await _userController.Login(loginModel);
